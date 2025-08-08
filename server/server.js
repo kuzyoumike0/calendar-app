@@ -1,30 +1,36 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
+const db = require('./db'); // 先ほどのdb.js
 const app = express();
 const port = process.env.PORT || 8080;
 
-// ミドルウェア設定
 app.use(cors());
 app.use(express.json());
 
-// 仮のデータ格納用（本来はDB）
-let schedules = [];
-
 // スケジュール一覧取得API
-app.get('/api/schedules', (req, res) => {
-  res.json(schedules);
+app.get('/api/schedules', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM schedules ORDER BY date');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('サーバーエラー');
+  }
 });
 
 // スケジュール追加API
-app.post('/api/schedules', (req, res) => {
+app.post('/api/schedules', async (req, res) => {
   const { name, date, time } = req.body;
-  if (!name || !date || !time) {
-    return res.status(400).json({ error: 'name, date, timeは必須です' });
+  try {
+    const result = await db.query(
+      'INSERT INTO schedules (name, date, time) VALUES ($1, $2, $3) RETURNING *',
+      [name, date, time]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('サーバーエラー');
   }
-  const newSchedule = { id: schedules.length + 1, name, date, time };
-  schedules.push(newSchedule);
-  res.status(201).json(newSchedule);
 });
 
 app.listen(port, () => {
