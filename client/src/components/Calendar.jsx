@@ -1,25 +1,28 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スケジュール管理カレンダー</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>🌸 スケジュール管理</h1>
-    <form id="schedule-form">
-      <input type="text" id="title" placeholder="予定名を入力" required>
-      <input type="date" id="date" required>
-      <button type="submit">追加</button>
-    </form>
+import React, { useState, useEffect } from "react";
+import Calendar from "react-calendar";
 
-    <div id="schedule-list" class="schedule-list">
-      <!-- ここに予定が追加されます -->
+export default function MyCalendar() {
+  const [date, setDate] = useState(new Date());
+  const [sharedData, setSharedData] = useState([]);
+
+  useEffect(() => {
+    fetch(`/api/shared/${date.toISOString().split("T")[0]}`)
+      .then((res) => res.json())
+      .then((data) => setSharedData(data))
+      .catch((err) => console.error(err));
+  }, [date]);
+
+  return (
+    <div className="calendar-container">
+      <Calendar onChange={setDate} value={date} />
+      <h3>{date.toDateString()} の予定</h3>
+      <ul>
+        {sharedData.map((slot) => (
+          <li key={slot.time_slot}>
+            {slot.time_slot}: {slot.participant_count}人
+          </li>
+        ))}
+      </ul>
     </div>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
+  );
+}
