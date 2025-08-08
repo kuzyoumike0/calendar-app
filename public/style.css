@@ -46,13 +46,13 @@ select {
 input[type="text"]:focus,
 input[type="date"]:focus,
 select:focus {
-  border-color: #3498db;
+  border-color: #5c9291;
   outline: none;
 }
 
 /* ボタン */
 button {
-  background-color: #3498db;
+  background-color: #5c9291;
   color: white;
   border: none;
   border-radius: 6px;
@@ -113,7 +113,7 @@ ul#scheduleList li {
 }
 
 .schedule-time-夜 {
-  background-color: #3498db;
+  background-color: #cc7eb1;
   color: white;
   padding: 0.1rem 0.5rem;
   border-radius: 4px;
