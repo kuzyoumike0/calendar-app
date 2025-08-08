@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 function App() {
   const [schedules, setSchedules] = useState([]);
 
-  // ページロード時に予定一覧を取得
   useEffect(() => {
     fetch('/api/schedules')
       .then(res => res.json())
@@ -11,7 +10,6 @@ function App() {
       .catch(console.error);
   }, []);
 
-  // フォーム送信処理
   const handleSubmit = (e) => {
     e.preventDefault();
     const name = e.target.name.value;
