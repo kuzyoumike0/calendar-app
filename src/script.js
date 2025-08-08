@@ -1,46 +1,91 @@
-async function fetchSchedules() {
-  try {
-    const res = await fetch('/api/schedules');
-    if (!res.ok) throw new Error('予定の取得に失敗しました');
-    const data = await res.json();
-    const list = document.getElementById('scheduleList');
-    list.innerHTML = '';
-    data.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = `${item.date} ${item.time} - ${item.name}`;
-      list.appendChild(li);
-    });
-  } catch (err) {
-    alert(err.message);
+const scheduleForm = document.getElementById('scheduleForm');
+const scheduleList = document.getElementById('scheduleList');
+const calendarDiv = document.getElementById('calendar');
+
+let schedules = []; // 予定を保存する配列
+
+// 今日の日付など初期情報取得
+const today = new Date();
+let currentYear = today.getFullYear();
+let currentMonth = today.getMonth(); // 0-11
+
+// カレンダーを作成する関数
+function createCalendar(year, month) {
+  const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+  let html = '<table class="calendar"><thead><tr>';
+
+  // 曜日ヘッダー
+  daysOfWeek.forEach((day, i) => {
+    html += `<th${i === 0 ? ' class="sun"' : i === 6 ? ' class="sat"' : ''}>${day}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  let dayCount = 1;
+  let rows = 6;
+
+  for (let i = 0; i < rows; i++) {
+    html += '<tr>';
+    for (let j = 0; j < 7; j++) {
+      if (i === 0 && j < firstDay) {
+        html += '<td class="mute"></td>';
+      } else if (dayCount > daysInMonth) {
+        html += '<td class="mute"></td>';
+      } else {
+        // 予定を取得
+        const daySchedules = schedules.filter(sch => {
+          const d = new Date(sch.date);
+          return d.getFullYear() === year && d.getMonth() === month && d.getDate() === dayCount;
+        });
+
+        let scheduleHTML = '';
+        daySchedules.forEach(sch => {
+          scheduleHTML += `<div class="schedule-item schedule-${sch.time}">${sch.name} (${sch.time})</div>`;
+        });
+
+        const isToday = year === today.getFullYear() && month === today.getMonth() && dayCount === today.getDate();
+
+        html += `<td${isToday ? ' class="today"' : ''}><div>${dayCount}</div>${scheduleHTML}</td>`;
+        dayCount++;
+      }
+    }
+    html += '</tr>';
   }
+
+  html += '</tbody></table>';
+
+  calendarDiv.innerHTML = html;
 }
 
-document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+// 予定一覧を表示
+function updateScheduleList() {
+  scheduleList.innerHTML = '';
+  schedules.forEach((sch, i) => {
+    const li = document.createElement('li');
+    li.textContent = `${sch.date} - ${sch.name} (${sch.time})`;
+    scheduleList.appendChild(li);
+  });
+}
+
+// フォーム送信時の処理
+scheduleForm.addEventListener('submit', e => {
   e.preventDefault();
+
   const name = document.getElementById('name').value.trim();
   const date = document.getElementById('date').value;
   const time = document.getElementById('time').value;
 
-  if (!name || !date) {
-    alert('名前と日付を入力してください');
-    return;
-  }
+  if (!name || !date) return;
 
-  try {
-    const res = await fetch('/api/schedules', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ name, date, time }),
-    });
-    if (!res.ok) throw new Error('予定の追加に失敗しました');
+  schedules.push({ name, date, time });
 
-    alert('予定を追加しました');
-    document.getElementById('scheduleForm').reset();
-    fetchSchedules();
-  } catch (err) {
-    alert(err.message);
-  }
+  updateScheduleList();
+  createCalendar(currentYear, currentMonth);
+
+  scheduleForm.reset();
 });
 
-// 初期表示で予定取得
-fetchSchedules();
+// 初回表示
+createCalendar(currentYear, currentMonth);
