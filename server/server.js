@@ -7,6 +7,11 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
+// ルートパスに簡単な応答を追加
+app.get('/', (req, res) => {
+  res.send('サーバー稼働中です');
+});
+
 // スケジュール一覧取得API
 app.get('/api/schedules', async (req, res) => {
   try {
@@ -21,6 +26,9 @@ app.get('/api/schedules', async (req, res) => {
 // スケジュール追加API
 app.post('/api/schedules', async (req, res) => {
   const { name, date, time } = req.body;
+  if (!name || !date || !time) {
+    return res.status(400).json({ error: 'name, date, timeは必須です' });
+  }
   try {
     const result = await db.query(
       'INSERT INTO schedules (name, date, time) VALUES ($1, $2, $3) RETURNING *',
