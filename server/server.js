@@ -10,7 +10,7 @@ app.use(express.json());
 
 // ルートパスにHTMLファイルを返すよう変更
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));  // ファイルの場所に合わせてパス変更してください
+  res.sendFile(path.join(__dirname, '../client/public/index.html'));
 });
 
 // スケジュール一覧取得API
@@ -45,3 +45,4 @@ app.post('/api/schedules', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
