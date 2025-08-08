@@ -1,26 +1,101 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <title>カレンダー予定追加</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <h1>予定を追加</h1>
-  <form id="scheduleForm">
-    <input type="text" id="name" placeholder="名前" required />
-    <input type="date" id="date" required />
-    <select id="time">
-      <option value="全日">全日</option>
-      <option value="昼">昼</option>
-      <option value="夜">夜</option>
-    </select>
-    <button type="submit">追加</button>
-  </form>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+  background: #f9f9f9;
+}
 
-  <h2>予定一覧</h2>
-  <ul id="scheduleList"></ul>
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
 
-  <script src="script.js"></script>
-</body>
-</html>
+form {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+input, select, button {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+button {
+  cursor: pointer;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#scheduleList {
+  list-style: none;
+  padding-left: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  margin-bottom: 2rem;
+}
+
+#scheduleList li {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.calendar th, .calendar td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: center;
+  vertical-align: top;
+  height: 80px;
+  position: relative;
+}
+
+.calendar th {
+  background-color: #007bff;
+  color: white;
+}
+
+.calendar td.mute {
+  color: #bbb;
+}
+
+.calendar td.today {
+  background-color: #ffeeba;
+  font-weight: bold;
+}
+
+.schedule-item {
+  font-size: 0.75rem;
+  margin-top: 2px;
+  border-radius: 4px;
+  padding: 2px 4px;
+  color: white;
+}
+
+.schedule-全日 {
+  background-color: #28a745;
+}
+
+.schedule-昼 {
+  background-color: #ffc107;
+}
+
+.schedule-夜 {
+  background-color: #17a2b8;
+}
