@@ -3,49 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>スケジュール管理カレンダー</title>
+  <title>スケジュールカレンダー</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>📅 スケジュール登録</h1>
-
-    <form id="scheduleForm" class="form">
-      <input type="text" id="name" placeholder="名前" required class="input" />
-      <input type="date" id="date" required class="input" />
-      <select id="time" class="input">
-        <option value="全日">全日</option>
-        <option value="昼">昼</option>
-        <option value="夜">夜</option>
-      </select>
-      <button type="submit" class="button">追加</button>
-    </form>
-
-    <h2>📝 登録済みスケジュール</h2>
-    <ul id="scheduleList" class="schedule-list"></ul>
+    <h1>📅 みんなのスケジュールカレンダー</h1>
+    <div id="calendar"></div>
   </div>
 
-  <script>
-    // DOM読み込み完了後にスクリプトを実行
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('scheduleForm');
-      const scheduleList = document.getElementById('scheduleList');
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const name = document.getElementById('name').value;
-        const date = document.getElementById('date').value;
-        const time = document.getElementById('time').value;
-
-        const li = document.createElement('li');
-        li.className = 'schedule-item';
-        li.innerHTML = `<strong>${name}</strong> さんの予定: <span class="date">${date}</span> - <span class="time">${time}</span>`;
-        scheduleList.appendChild(li);
-
-        // 入力をクリア
-        form.reset();
-      });
-    });
-  </script>
+  <script src="index.js"></script>
 </body>
 </html>
