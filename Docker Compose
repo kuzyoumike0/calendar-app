@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: YoqrkStaIqEJNpHPLogqKhhpZqkKnlmD
-      POSTGRES_DB: Postgres
+      POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
 
