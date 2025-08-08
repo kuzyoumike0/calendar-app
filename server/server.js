@@ -12,9 +12,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API: スケジュール一覧取得
-app.get('/api/schedules', async (req, res) => {
+app.get('/api/events', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM schedules ORDER BY date');
+    const result = await db.query('SELECT * FROM events ORDER BY date');
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -23,14 +23,14 @@ app.get('/api/schedules', async (req, res) => {
 });
 
 // API: スケジュール追加
-app.post('/api/schedules', async (req, res) => {
+app.post('/api/events', async (req, res) => {
   const { name, date, time } = req.body;
   if (!name || !date || !time) {
     return res.status(400).json({ error: 'name, date, timeは必須です' });
   }
   try {
     const result = await db.query(
-      'INSERT INTO schedules (name, date, time) VALUES ($1, $2, $3) RETURNING *',
+      'INSERT INTO events (name, date, time) VALUES ($1, $2, $3) RETURNING *',
       [name, date, time]
     );
     res.status(201).json(result.rows[0]);
@@ -48,3 +48,4 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
