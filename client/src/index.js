@@ -12,8 +12,6 @@ import ReactDOM from 'react-dom/client';
 // アプリ全体のルートコンポーネント（ここから全てが始まる）
 import App from './App';
 
-// 共通CSS（全体のスタイルを反映）
-import './index.css'; // もし style.css を使っているなら ./style.css に変更
 
 // ==============================
 // HTML内の <div id="root"> を取得
