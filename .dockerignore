@@ -1,5 +1,14 @@
+# node_modulesフォルダを無視
 node_modules
+
+# npmのデバッグログを無視
 npm-debug.log
+
+# Reactのビルド成果物を無視
 build
+
+# Gitの管理情報を無視（普通は.gitフォルダは自動的に無視される）
 .git
+
+# ログファイル全般を無視
 *.log
