@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -7,13 +7,40 @@ function App() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("全日");
 
-  const handleSubmit = (e) => {
+  // データ取得
+  useEffect(() => {
+    fetch("http://localhost:3001/schedules")
+      .then((res) => res.json())
+      .then((data) => setSchedules(data))
+      .catch((err) => console.error("取得エラー:", err));
+  }, []);
+
+  // フォーム送信
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newSchedule = { name, date, time };
-    setSchedules([...schedules, newSchedule]);
-    setName("");
-    setDate("");
-    setTime("全日");
+    const newSchedule = {
+      name,
+      schedule_date: date,
+      time_slot: time,
+    };
+
+    try {
+      const res = await fetch("http://localhost:3001/schedules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSchedule),
+      });
+
+      if (res.ok) {
+        const saved = await res.json();
+        setSchedules([...schedules, saved]);
+        setName("");
+        setDate("");
+        setTime("全日");
+      }
+    } catch (err) {
+      console.error("送信エラー:", err);
+    }
   };
 
   return (
@@ -45,7 +72,7 @@ function App() {
       <ul>
         {schedules.map((s, index) => (
           <li key={index}>
-            {s.name} - {s.date} - {s.time}
+            {s.name} - {s.schedule_date} - {s.time_slot}
           </li>
         ))}
       </ul>
