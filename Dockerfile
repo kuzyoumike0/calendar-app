@@ -1,28 +1,29 @@
 # 1. Reactアプリのビルド
 FROM node:18 AS frontend
 WORKDIR /app
-COPY ./ ./             # ← client ディレクトリが必要
+COPY client/package*.json ./          # 依存関係だけ先にコピー
 RUN npm install
-RUN npm run build           # ./build に静的ファイル出力
+COPY client/ ./                      # React ソースコード全コピー
+RUN npm run build
 
-# 2. Express サーバーのセットアップ
+# 2. Express サーバーセットアップ
 FROM node:18 AS backend
 WORKDIR /app
-COPY server/ ./             # ← server ディレクトリが必要
+COPY server/package*.json ./          # 依存関係だけ先にコピー
 RUN npm install
+COPY server/ ./                      # サーバーコード全コピー
 
-# 3. 本番用イメージ作成（Express + React静的ファイル）
+# 3. 本番用イメージ
 FROM node:18
 WORKDIR /app
 
 # サーバーコードをコピー
-COPY ./ ./
+COPY --from=backend /app ./ 
 
-
-# Reactビルド済みファイルを public にコピー
+# Reactビルド済み静的ファイルをpublicに配置
 COPY --from=frontend /app/build ./public
 
-# ポートと起動コマンド
 ENV PORT=3000
 EXPOSE 3000
+
 CMD ["node", "index.js"]
