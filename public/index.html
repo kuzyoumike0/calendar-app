@@ -2,13 +2,24 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>2ヶ月分カレンダー</title>
+  <title>カレンダー予定追加</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>2ヶ月分カレンダー表示</h1>
-  <div id="calendar"></div>
+  <h1>予定を追加</h1>
+  <form id="scheduleForm">
+    <input type="text" id="name" placeholder="名前" required />
+    <input type="date" id="date" required />
+    <select id="time">
+      <option value="全日">全日</option>
+      <option value="昼">昼</option>
+      <option value="夜">夜</option>
+    </select>
+    <button type="submit">追加</button>
+  </form>
+
+  <h2>予定一覧</h2>
+  <ul id="scheduleList"></ul>
 
   <script src="script.js"></script>
 </body>
