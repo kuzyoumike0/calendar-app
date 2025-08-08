@@ -8,7 +8,8 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-// ルートパスにHTMLファイルを返すよう変更
+app.use(express.static(path.join(__dirname, '../client/public')));
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/public/index.html'));
 });
@@ -45,4 +46,5 @@ app.post('/api/schedules', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
 
