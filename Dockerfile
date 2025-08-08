@@ -16,7 +16,8 @@ FROM node:18
 WORKDIR /app
 
 # サーバーコードをコピー
-COPY --from=backend /app ./ 
+COPY ./ ./
+
 
 # Reactビルド済みファイルを public にコピー
 COPY --from=frontend /app/build ./public
