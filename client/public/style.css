@@ -1,0 +1,156 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
+  margin: 0;
+  padding: 2rem;
+  color: #333;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  padding: 0.6rem 1rem;
+  border: 1.8px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  min-width: 140px;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+button {
+  padding: 0.7rem 1.8rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  min-width: 100px;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* スケジュール一覧 */
+#scheduleList {
+  list-style: none;
+  padding-left: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #fafafa;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
+}
+
+#scheduleList li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+  color: #444;
+  transition: background 0.2s ease;
+}
+
+#scheduleList li:last-child {
+  border-bottom: none;
+}
+
+#scheduleList li:hover {
+  background: #e0ebff;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* 時間帯別カラー */
+.schedule-time-全日 {
+  background-color: #22c55e;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.schedule-time-昼 {
+  background-color: #facc15;
+  color: #4b4300;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.schedule-time-夜 {
+  background-color: #2563eb;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+/* スクロールバーをおしゃれに (Webkit系のみ) */
+#scheduleList::-webkit-scrollbar {
+  width: 8px;
+}
+
+#scheduleList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+#scheduleList::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 10px;
+}
+
+#scheduleList::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
