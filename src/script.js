@@ -1,77 +1,46 @@
-const date = new Date();
-const today = date.getDate();
-const currentMonth = date.getMonth();
-const currentYear = date.getFullYear();
-
-function createCalendar(year, month) {
-    const monthDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    let calendarHTML = `<table class="calendar"><thead><tr>`;
-
-    for (let i = 0; i < 7; i++) {
-        if (i === 0) {
-            calendarHTML += `<th class="sun">${monthDays[i]}</th>`;
-        } else if (i === 6) {
-            calendarHTML += `<th class="sat">${monthDays[i]}</th>`;
-        } else {
-            calendarHTML += `<th>${monthDays[i]}</th>`;
-        }
-    }
-
-    calendarHTML += `</tr></thead><tbody>`;
-
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
-
-    const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-    let dayCount = 1;
-    let prevDayCount = daysInPrevMonth - firstDay + 1;
-
-    for (let i = 0; i < 6; i++) {
-        calendarHTML += `<tr>`;
-
-        for (let j = 0; j < 7; j++) {
-            if (i === 0 && j < firstDay) {
-                // 前月の日付（薄グレー）
-                calendarHTML += `<td class="mute">${prevDayCount}</td>`;
-                prevDayCount++;
-            } else if (dayCount > daysInMonth) {
-                // 来月の日付（薄グレー）
-                let nextMonthDayCount = dayCount - daysInMonth;
-                calendarHTML += `<td class="mute">${nextMonthDayCount}</td>`;
-                dayCount++;
-            } else {
-                // 今月の日付
-                if (dayCount === today && month === currentMonth && year === currentYear) {
-                    calendarHTML += `<td class="today">${dayCount}</td>`;
-                } else if (j === 1) {
-                    calendarHTML += `<td class="off">${dayCount}</td>`;
-                } else if (j === 0) {
-                    calendarHTML += `<td class="sun">${dayCount}</td>`;
-                } else if (j === 6) {
-                    calendarHTML += `<td class="sat">${dayCount}</td>`;
-                } else {
-                    calendarHTML += `<td>${dayCount}</td>`;
-                }
-                dayCount++;
-            }
-        }
-
-        calendarHTML += `</tr>`;
-
-        // 6週目以降の日付が全て来月なら終了
-        if (dayCount - daysInMonth > 7) {
-            break;
-        }
-    }
-
-    calendarHTML += `</tbody></table>`;
-
-    return calendarHTML;
+async function fetchSchedules() {
+  try {
+    const res = await fetch('/api/schedules');
+    if (!res.ok) throw new Error('予定の取得に失敗しました');
+    const data = await res.json();
+    const list = document.getElementById('scheduleList');
+    list.innerHTML = '';
+    data.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.date} ${item.time} - ${item.name}`;
+      list.appendChild(li);
+    });
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
-// 2ヶ月分表示（現在月と翌月）
-const calendarContainer = document.getElementById('calendar');
-calendarContainer.innerHTML =
-    createCalendar(currentYear, currentMonth) +
-    createCalendar(currentYear, (currentMonth + 1) % 12);
+document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const date = document.getElementById('date').value;
+  const time = document.getElementById('time').value;
+
+  if (!name || !date) {
+    alert('名前と日付を入力してください');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/schedules', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name, date, time }),
+    });
+    if (!res.ok) throw new Error('予定の追加に失敗しました');
+
+    alert('予定を追加しました');
+    document.getElementById('scheduleForm').reset();
+    fetchSchedules();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+// 初期表示で予定取得
+fetchSchedules();
