@@ -1,7 +1,9 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const db = require('./db');
+
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -11,7 +13,7 @@ app.use(express.json());
 // Reactビルド成果物を配信
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API: スケジュール一覧取得
+// API: イベント一覧取得
 app.get('/api/events', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM events ORDER BY date');
@@ -22,7 +24,7 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-// API: スケジュール追加
+// API: イベント追加
 app.post('/api/events', async (req, res) => {
   const { name, date, time } = req.body;
   if (!name || !date || !time) {
@@ -40,7 +42,7 @@ app.post('/api/events', async (req, res) => {
   }
 });
 
-// React Router対応（全てのルートでindex.htmlを返す）
+// React Router対応（全ルートでindex.html返す）
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -48,4 +50,3 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
