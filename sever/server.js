@@ -1,57 +1,51 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const { Pool } = require('pg');
+const path = require('path');
 
 const app = express();
-const port = 3001;
+app.use(bodyParser.json());
 
-// PostgreSQL 接続設定
+// 静的ファイル配信
+app.use(express.static(path.join(__dirname, 'public')));
+
+// PostgreSQL設定（環境変数を使うのが推奨です）
 const pool = new Pool({
-  user: 'your_pg_user',
+  user: 'youruser',
   host: 'localhost',
-  database: 'your_database_name',
-  password: 'your_pg_password',
+  database: 'yourdb',
+  password: 'yourpassword',
   port: 5432,
 });
 
-// ミドルウェア
-app.use(cors());
-app.use(bodyParser.json());
-
-// 📌 スケジュール取得 API
+// 予定一覧取得
 app.get('/api/schedules', async (req, res) => {
-  const { date } = req.query;
-
   try {
-    const result = await pool.query(
-      'SELECT * FROM schedules WHERE date = $1 ORDER BY time_slot, user_name',
-      [date]
-    );
+    const result = await pool.query('SELECT * FROM schedules ORDER BY date, time');
     res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching schedules:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'データ取得失敗' });
   }
 });
 
-// 📌 スケジュール追加 API
+// 予定追加
 app.post('/api/schedules', async (req, res) => {
-  const { user_name, date, time_slot, content } = req.body;
-
+  const { name, date, time } = req.body;
+  if (!name || !date || !time) {
+    return res.status(400).json({ error: '必須項目不足' });
+  }
   try {
-    await pool.query(
-      'INSERT INTO schedules (user_name, date, time_slot, content) VALUES ($1, $2, $3, $4)',
-      [user_name, date, time_slot, content]
-    );
-    res.status(201).json({ message: 'Schedule added' });
-  } catch (error) {
-    console.error('Error inserting schedule:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    await pool.query('INSERT INTO schedules (name, date, time) VALUES ($1, $2, $3)', [name, date, time]);
+    res.status(201).json({ message: '予定追加成功' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '予定追加失敗' });
   }
 });
 
-// サーバー起動
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+// ポート指定で起動
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
