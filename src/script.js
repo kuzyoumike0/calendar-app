@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('scheduleForm');
   const list = document.getElementById('scheduleList');
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', event => {
     event.preventDefault();
 
     const name = document.getElementById('name').value.trim();
