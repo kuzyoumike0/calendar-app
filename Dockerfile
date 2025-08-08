@@ -3,17 +3,18 @@
 # ======================
 FROM node:18 AS frontend-build
 
-WORKDIR /app
+WORKDIR /app/client
 
 # package.json と package-lock.json を先にコピーし依存関係インストール
-COPY client/package*.json ./client/
-RUN cd client && npm install
+COPY client/package*.json ./
+RUN npm install
 
 # クライアントソースコードコピー
-COPY client ./client
+COPY client/ ./
 
 # フロントエンドビルド
-RUN cd client && npm run build
+RUN npm run build
+
 
 # ======================
 # 2. バックエンドビルド
