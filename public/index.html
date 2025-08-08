@@ -1,55 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>milkpopカレンダー</title>
-    <style>
-      body { font-family: Arial, sans-serif; }
-      table.calendar { border-collapse: collapse; width: 100%; max-width: 600px; margin: 20px auto; }
-      table.calendar th, table.calendar td {
-        border: 1px solid #999;
-        padding: 10px;
-        text-align: center;
-        vertical-align: top;
-        height: 80px;
-      }
-      table.calendar th {
-        background-color: #f0f0f0;
-      }
-      table.calendar td.today {
-        background-color: #fffae6;
-      }
-      table.calendar td.inactive {
-        color: #aaa;
-      }
-      .date-number {
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
-      .event {
-        background-color: #8bc34a;
-        color: white;
-        padding: 2px 5px;
-        margin-top: 4px;
-        border-radius: 3px;
-        font-size: 0.8em;
-        text-align: left;
-      }
-    </style>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>お洒落なカレンダー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>みんなのカレンダー</h1>
 
-  <body>
-    <h1 style="text-align:center;">シンプルカレンダー</h1>
+    <form id="schedule-form">
+      <input type="text" id="name" placeholder="名前" required>
+      <input type="date" id="date" required>
+      <select id="time">
+        <option value="全日">全日</option>
+        <option value="昼">昼</option>
+        <option value="夜">夜</option>
+      </select>
+      <button type="submit">追加</button>
+    </form>
 
-    <div id="root"></div> <!-- ✅ Reactのマウント先はここ -->
+    <ul id="schedule-list" class="schedule-list"></ul>
+  </div>
 
-    <table class="calendar" id="calendar">
-      <thead>
-        <tr>
-          <th>日</th>
-          <th>月</th>
-          <th>火</th>
-          <th>水</th>
-          <th>木</th>
-          <th>金</th>
+  <script src="script.js"></script>
+</body>
+</html>
