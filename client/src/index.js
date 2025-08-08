@@ -12,7 +12,6 @@ import ReactDOM from 'react-dom/client';
 // アプリ全体のルートコンポーネント（ここから全てが始まる）
 import App from './App';
 
-
 // ==============================
 // HTML内の <div id="root"> を取得
 // public/index.html にある root 要素をターゲットにする
