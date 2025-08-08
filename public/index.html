@@ -2,13 +2,15 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>カレンダー予定追加</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>予定追加テスト</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 2rem auto; }
+    ul { padding-left: 0; list-style:none; }
+    li { margin-bottom: 0.5rem; }
+  </style>
 </head>
 <body>
-  <h1>みんなのカレンダー</h1>
-
+  <h1>予定追加テスト</h1>
   <form id="scheduleForm">
     <input type="text" id="name" placeholder="名前" required />
     <input type="date" id="date" required />
@@ -19,9 +21,6 @@
     </select>
     <button type="submit">追加</button>
   </form>
-
-  <h2>カレンダー</h2>
-  <div id="calendar"></div>
 
   <h2>予定一覧</h2>
   <ul id="scheduleList"></ul>
