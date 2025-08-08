@@ -1,47 +1,58 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-const DATA_PATH = path.join(__dirname, 'data', 'calendar.json');
+// データファイル
+const DATA_FILE = path.join(__dirname, "data", "calendar.json");
 
-// 初期化：ファイルがない場合は作成
-if (!fs.existsSync(DATA_PATH)) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify({}), 'utf8');
-}
+// 静的ファイル配信（Reactビルド成果物）
+app.use(express.static(path.join(__dirname, "public")));
 
-// 予定を取得
-app.get('/api/schedule', (req, res) => {
-  const data = fs.readFileSync(DATA_PATH, 'utf8');
-  res.json(JSON.parse(data));
+// 全員分のスケジュール取得
+app.get("/api/shared/:date", (req, res) => {
+  const { date } = req.params;
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+  const filtered = data.filter((d) => d.date === date);
+  res.json(filtered);
 });
 
-// 予定を追加・上書き
-app.post('/api/schedule', (req, res) => {
-  const { date, user, slot, note } = req.body; // 例：2025-08-08, "user1", "morning", "出勤"
-  const raw = fs.readFileSync(DATA_PATH, 'utf8');
-  const json = JSON.parse(raw);
+// 個人スケジュール登録
+app.post("/api/schedule", (req, res) => {
+  const { date, time_slot, description } = req.body;
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
 
-  if (!json[date]) {
-    json[date] = {};
+  // 既存のスロット更新 or 追加
+  const idx = data.findIndex(
+    (d) => d.date === date && d.time_slot === time_slot
+  );
+  if (idx >= 0) {
+    data[idx].participant_count += 1;
+  } else {
+    data.push({
+      date,
+      time_slot,
+      participant_count: 1,
+      description
+    });
   }
-  if (!json[date][user]) {
-    json[date][user] = {};
-  }
 
-  json[date][user][slot] = note;
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  res.json({ message: "スケジュール登録完了" });
+});
 
-  fs.writeFileSync(DATA_PATH, JSON.stringify(json, null, 2), 'utf8');
-  res.json({ status: 'ok', saved: { date, user, slot, note } });
+// Reactのルーティング対応
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
