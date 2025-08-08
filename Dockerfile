@@ -1,7 +1,7 @@
 # 1. Reactアプリのビルド
 FROM node:18 AS frontend
 WORKDIR /app
-COPY client/ ./             # ← client ディレクトリが必要
+COPY ./ ./             # ← client ディレクトリが必要
 RUN npm install
 RUN npm run build           # ./build に静的ファイル出力
 
