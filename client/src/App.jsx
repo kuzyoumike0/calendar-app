@@ -1,12 +1,13 @@
+// src/App.jsx
 import React, { useEffect, useState } from 'react';
 
 function App() {
-  const [schedules, setSchedules] = useState([]);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    fetch('/api/schedules')
+    fetch('/api/events')
       .then(res => res.json())
-      .then(data => setSchedules(data))
+      .then(data => setEvents(data))
       .catch(console.error);
   }, []);
 
@@ -16,14 +17,14 @@ function App() {
     const date = e.target.date.value;
     const time = e.target.time.value;
 
-    fetch('/api/schedules', {
+    fetch('/api/events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, date, time }),
     })
       .then(res => res.json())
-      .then(newSchedule => {
-        setSchedules(prev => [...prev, newSchedule]);
+      .then(newEvent => {
+        setEvents(prev => [...prev, newEvent]);
         e.target.reset();
       })
       .catch(console.error);
@@ -45,9 +46,9 @@ function App() {
 
       <h2>登録済みスケジュール</h2>
       <ul>
-        {schedules.map(sch => (
-          <li key={sch.id}>
-            {sch.name} さんの予定: {sch.date} - {sch.time}
+        {events.map(event => (
+          <li key={event.id}>
+            {event.name} さんの予定: {event.date} - {event.time}
           </li>
         ))}
       </ul>
