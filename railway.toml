@@ -1,0 +1,8 @@
+# railway.toml
+[build]
+  builder = "NIXPACKS"
+  buildCommand = "npm install && npm run build"
+  startCommand = "npm start"
+
+[deploy]
+  numReplicas = 1
