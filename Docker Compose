@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YoqrkStaIqEJNpHPLogqKhhpZqkKnlmD
+      POSTGRES_DB: Postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
