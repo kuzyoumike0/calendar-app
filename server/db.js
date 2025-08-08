@@ -1,11 +1,9 @@
 const { Pool } = require('pg');
 
+// 環境変数からDATABASE_URLを取得
 const pool = new Pool({
-  user: 'your_db_user',
-  host: 'localhost',
-  database: 'your_db_name',
-  password: 'your_db_password',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },  // RailwayのPostgresはSSL必須の場合が多い
 });
 
 module.exports = {
