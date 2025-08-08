@@ -1,3 +1,5 @@
+console.log('script.jsが読み込まれました');
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('scheduleForm');
   const list = document.getElementById('scheduleList');
