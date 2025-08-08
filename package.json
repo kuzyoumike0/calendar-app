@@ -11,7 +11,7 @@
     "serve": "^14.1.2"
   },
   "scripts": {
-    "start": "serve -s build -l $PORT"
+    "start": "serve -s build -l $PORT",
     "build": "react-scripts build"
   }
 }
