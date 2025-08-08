@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');      // 追加
 const db = require('./db'); // 先ほどのdb.js
 const app = express();
 const port = process.env.PORT || 8080;
@@ -7,9 +8,9 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-// ルートパスに簡単な応答を追加
+// ルートパスにHTMLファイルを返すよう変更
 app.get('/', (req, res) => {
-  res.send('サーバー稼働中です');
+  res.sendFile(path.join(__dirname, 'index.html'));  // ファイルの場所に合わせてパス変更してください
 });
 
 // スケジュール一覧取得API
