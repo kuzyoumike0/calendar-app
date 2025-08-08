@@ -14,4 +14,10 @@
   "devDependencies": {
     "nodemon": "^2.0.22"
   }
+  "dependencies": {
+  "sqlite": "^4.2.1",
+  "sqlite3": "^5.1.7",
+  ...
+}
+
 }
