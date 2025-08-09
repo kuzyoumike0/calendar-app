@@ -1,40 +1,31 @@
-# ======================
-# 1. フロントエンドビルド
-# ======================
-FROM node:18 AS frontend-build
+version: "3"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: mydb
+      DB_PORT: 5432
 
-WORKDIR /app/client
+  db:
+    image: postgres:15
+    container_name: mydb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
-# package.json と package-lock.json を先にコピーし依存関係インストール
-COPY client/package*.json ./
-RUN npm install
-
-# クライアントソースコードコピー
-COPY client/ ./
-
-
-# フロントエンドビルド
-RUN npm run build
-
-
-# ======================
-# 2. バックエンドビルド
-# ======================
-FROM node:18 AS backend
-
-WORKDIR /app/server
-
-# サーバーのpackage.jsonコピー＆インストール
-COPY server/package*.json ./
-RUN npm install
-
-# フロントエンドのビルド成果物を backend/public にコピー
-COPY --from=frontend-build /app/client/build ./public
-
-# バックエンドコードをコピー
-COPY server/ ./
-
-ENV PORT=8080
-EXPOSE 8080
-
-CMD ["node", "server.js"]
+volumes:
+  db_data:
