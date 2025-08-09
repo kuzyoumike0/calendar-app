@@ -16,6 +16,25 @@ const fs = require('fs');
   // DBファイルパス（環境変数優先、なければ ./data/schedules.db）
   const dbFilePath = process.env.DB_PATH || path.join(dataDir, 'schedules.db');
 
+  // 拡張子チェック（sqliteファイルらしいか）
+  if (path.extname(dbFilePath) !== '.db') {
+    console.warn(`Warning: DB_PATH does not point to a .db file: ${dbFilePath}`);
+  }
+
+  // 既存のファイルが存在し、SQLiteデータベースでない可能性があるファイルを確認
+  if (fs.existsSync(dbFilePath)) {
+    try {
+      // sqlite3の Database#serializeを使い単純に開いてみる方法などもありますが
+      // とりあえずファイルサイズが小さすぎる or 0の場合は警告を出す
+      const stats = fs.statSync(dbFilePath);
+      if (stats.size < 100) {
+        console.warn(`Warning: DB file size suspiciously small: ${dbFilePath} (${stats.size} bytes)`);
+      }
+    } catch (err) {
+      console.warn('Warning: Failed to stat DB file:', err);
+    }
+  }
+
   const db = await open({
     filename: dbFilePath,
     driver: sqlite3.Database
@@ -33,15 +52,12 @@ const fs = require('fs');
   const app = express();
   app.use(bodyParser.json());
 
-  // 静的ファイル配信(publicフォルダ)
   app.use(express.static(path.join(__dirname, 'public')));
 
-  // ルートパスでindex.htmlを返す
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
 
-  // 新規スケジュール作成API
   app.post('/schedules', async (req, res) => {
     try {
       const shareId = uuidv4();
@@ -61,7 +77,6 @@ const fs = require('fs');
     }
   });
 
-  // スケジュール取得API
   app.get('/schedules/:shareId', async (req, res) => {
     try {
       const row = await db.get(
@@ -81,7 +96,6 @@ const fs = require('fs');
     }
   });
 
-  // スケジュール更新API（楽観的ロック）
   app.put('/schedules/:shareId', async (req, res) => {
     try {
       const shareId = req.params.shareId;
