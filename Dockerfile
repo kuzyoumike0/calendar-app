@@ -1,34 +1,21 @@
-version: "3.8"
+# ベースイメージ
+FROM node:18
 
-services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    ports:
-      - "8080:8080"
-    environment:
-      DB_HOST: db
-      DB_USER: postgres
-      DB_PASSWORD: OYAPewoYlrTwCHMGeowncDSttHhEInfc
-      DB_NAME: mydb
-      DB_PORT: 5432
+# 作業ディレクトリを作成・移動
+WORKDIR /app/server
 
-  db:
-    image: postgres:15
-    container_name: mydb
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: OYAPewoYlrTwCHMGeowncDSttHhEInfc
-      POSTGRES_DB: mydb
-    volumes:
-      - railway-postgres-data:/var/lib/postgresql/data
+# package.json と package-lock.json をコピーして依存関係をインストール
+COPY server/package*.json ./
+RUN npm install
 
-volumes:
-  railway-postgres-data:
-    external: true
+# アプリケーションコードをコピー
+COPY server/ ./
+
+# 環境変数でポート指定（デフォルトは8080）
+ENV PORT=8080
+
+# コンテナのポート開放
+EXPOSE 8080
+
+# アプリ起動コマンド
+CMD ["node", "server.js"]
