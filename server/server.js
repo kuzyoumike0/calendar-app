@@ -7,37 +7,26 @@ const path = require('path');
 const fs = require('fs');
 
 (async () => {
-  // ローカル用にdataフォルダがなければ作成（永続化のために）
+  // dataフォルダがなければ作成（永続化用）
   const dataDir = path.join(__dirname, 'data');
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  // DBファイルパス（環境変数優先、なければ ./data/schedules.db）
+  // DBファイルパス（環境変数DB_PATH優先、なければ ./data/schedules.db）
   const dbFilePath = process.env.DB_PATH || path.join(dataDir, 'schedules.db');
 
-  // 拡張子チェック（sqliteファイルらしいか）
-  if (path.extname(dbFilePath) !== '.db') {
-    console.warn(`Warning: DB_PATH does not point to a .db file: ${dbFilePath}`);
-  }
-
-  // 既存のファイルが存在し、SQLiteデータベースでない可能性があるファイルを確認
+  // 起動時にDBファイルを削除してリセット（開発用、必要に応じてコメントアウト）
+  /*
   if (fs.existsSync(dbFilePath)) {
-    try {
-      // sqlite3の Database#serializeを使い単純に開いてみる方法などもありますが
-      // とりあえずファイルサイズが小さすぎる or 0の場合は警告を出す
-      const stats = fs.statSync(dbFilePath);
-      if (stats.size < 100) {
-        console.warn(`Warning: DB file size suspiciously small: ${dbFilePath} (${stats.size} bytes)`);
-      }
-    } catch (err) {
-      console.warn('Warning: Failed to stat DB file:', err);
-    }
+    fs.unlinkSync(dbFilePath);
+    console.log('Old DB file deleted for reset');
   }
+  */
 
   const db = await open({
     filename: dbFilePath,
-    driver: sqlite3.Database
+    driver: sqlite3.Database,
   });
 
   await db.exec(`
@@ -52,12 +41,15 @@ const fs = require('fs');
   const app = express();
   app.use(bodyParser.json());
 
+  // 静的ファイル配信（publicフォルダ）
   app.use(express.static(path.join(__dirname, 'public')));
 
+  // ルートアクセス時にindex.html返す
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
 
+  // 新規スケジュール作成API
   app.post('/schedules', async (req, res) => {
     try {
       const shareId = uuidv4();
@@ -77,6 +69,7 @@ const fs = require('fs');
     }
   });
 
+  // スケジュール取得API
   app.get('/schedules/:shareId', async (req, res) => {
     try {
       const row = await db.get(
@@ -88,7 +81,7 @@ const fs = require('fs');
         shareId: row.shareId,
         schedule: JSON.parse(row.data),
         version: row.version,
-        updatedAt: row.updatedAt
+        updatedAt: row.updatedAt,
       });
     } catch (err) {
       console.error('get error', err);
@@ -96,6 +89,7 @@ const fs = require('fs');
     }
   });
 
+  // スケジュール更新API（楽観的ロック）
   app.put('/schedules/:shareId', async (req, res) => {
     try {
       const shareId = req.params.shareId;
@@ -111,8 +105,10 @@ const fs = require('fs');
       if (clientVersion !== serverVersion) {
         return res.status(409).json({ error: 'version_conflict', serverVersion });
       }
+
       const newVersion = serverVersion + 1;
       const now = new Date().toISOString();
+
       await db.run(
         'UPDATE schedules SET data = ?, version = ?, updatedAt = ? WHERE shareId = ?',
         newData,
@@ -120,6 +116,7 @@ const fs = require('fs');
         now,
         shareId
       );
+
       res.json({ shareId, version: newVersion, updatedAt: now });
     } catch (err) {
       console.error('update error', err);
@@ -127,6 +124,9 @@ const fs = require('fs');
     }
   });
 
+  // サーバ起動
   const port = process.env.PORT || 3000;
-  app.listen(port, () => console.log('Server listening on', port));
+  app.listen(port, () => {
+    console.log('Server listening on port', port);
+  });
 })();
