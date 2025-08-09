@@ -12,7 +12,7 @@ services:
     environment:
       DB_HOST: db
       DB_USER: postgres
-      DB_PASSWORD: password
+      DB_PASSWORD: OYAPewoYlrTwCHMGeowncDSttHhEInfc
       DB_NAME: mydb
       DB_PORT: 5432
 
@@ -24,7 +24,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: OYAPewoYlrTwCHMGeowncDSttHhEInfc
       POSTGRES_DB: mydb
     volumes:
       - db_data:/var/lib/postgresql/data
