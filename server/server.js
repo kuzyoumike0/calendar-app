@@ -6,9 +6,11 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
 (async () => {
-  // Railwayなど永続化対応環境向けにSQLiteのDBファイルを永続パスに設定
+  // DBファイルパス設定（環境変数がなければ ./data/schedules.db にフォールバック）
+  const dbFilePath = process.env.DB_PATH || path.join(__dirname, 'data', 'schedules.db');
+
   const db = await open({
-    filename: process.env.DB_PATH || path.join(__dirname, 'calendar.json'),
+    filename: dbFilePath,
     driver: sqlite3.Database
   });
 
@@ -24,15 +26,15 @@ const path = require('path');
   const app = express();
   app.use(bodyParser.json());
 
-  // 静的ファイル（HTMLやCSS）を配信
+  // 静的ファイル配信(publicフォルダ)
   app.use(express.static(path.join(__dirname, 'public')));
 
-  // ルートアクセス時にindex.htmlを返す
+  // ルートパスでindex.htmlを返す
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
 
-  // 新規スケジュール作成
+  // 新規スケジュール作成API
   app.post('/schedules', async (req, res) => {
     try {
       const shareId = uuidv4();
@@ -52,7 +54,7 @@ const path = require('path');
     }
   });
 
-  // スケジュール取得
+  // スケジュール取得API
   app.get('/schedules/:shareId', async (req, res) => {
     try {
       const row = await db.get(
@@ -72,7 +74,7 @@ const path = require('path');
     }
   });
 
-  // スケジュール更新（楽観的ロック）
+  // スケジュール更新API（楽観的ロック）
   app.put('/schedules/:shareId', async (req, res) => {
     try {
       const shareId = req.params.shareId;
@@ -86,9 +88,7 @@ const path = require('path');
 
       const serverVersion = row.version;
       if (clientVersion !== serverVersion) {
-        return res
-          .status(409)
-          .json({ error: 'version_conflict', serverVersion });
+        return res.status(409).json({ error: 'version_conflict', serverVersion });
       }
       const newVersion = serverVersion + 1;
       const now = new Date().toISOString();
@@ -109,4 +109,3 @@ const path = require('path');
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log('Server listening on', port));
 })();
-
