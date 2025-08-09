@@ -8,7 +8,7 @@ const path = require('path');
 (async () => {
   // Railwayなど永続化対応環境向けにSQLiteのDBファイルを永続パスに設定
   const db = await open({
-    filename: process.env.DB_PATH || path.join(__dirname, 'schedules.db'),
+    filename: process.env.DB_PATH || path.join(__dirname, 'calendar.json'),
     driver: sqlite3.Database
   });
 
@@ -109,3 +109,4 @@ const path = require('path');
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log('Server listening on', port));
 })();
+
