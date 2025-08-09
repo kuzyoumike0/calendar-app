@@ -6,8 +6,9 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
 (async () => {
+  // Railwayなど永続化対応環境向けにSQLiteのDBファイルを永続パスに設定
   const db = await open({
-    filename: './schedules.db',
+    filename: process.env.DB_PATH || path.join(__dirname, 'schedules.db'),
     driver: sqlite3.Database
   });
 
