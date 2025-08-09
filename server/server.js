@@ -4,10 +4,17 @@ const { open } = require('sqlite');
 const sqlite3 = require('sqlite3');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
 
 (async () => {
-  // DBファイルパス設定（環境変数がなければ ./data/schedules.db にフォールバック）
-  const dbFilePath = process.env.DB_PATH || path.join(__dirname, 'data', 'schedules.db');
+  // ローカル用にdataフォルダがなければ作成（永続化のために）
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  // DBファイルパス（環境変数優先、なければ ./data/schedules.db）
+  const dbFilePath = process.env.DB_PATH || path.join(dataDir, 'schedules.db');
 
   const db = await open({
     filename: dbFilePath,
