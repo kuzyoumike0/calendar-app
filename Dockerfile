@@ -1,4 +1,5 @@
-version: "3"
+version: "3.8"
+
 services:
   backend:
     build:
@@ -18,6 +19,7 @@ services:
   db:
     image: postgres:15
     container_name: mydb
+    restart: always
     ports:
       - "5432:5432"
     environment:
