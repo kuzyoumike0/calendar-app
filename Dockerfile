@@ -12,8 +12,6 @@ RUN npm install
 # クライアントソースコードコピー
 COPY client/ ./
 
-VOLUME /mnt/data
-
 
 # フロントエンドビルド
 RUN npm run build
