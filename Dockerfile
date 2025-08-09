@@ -27,5 +27,8 @@ services:
       POSTGRES_PASSWORD: OYAPewoYlrTwCHMGeowncDSttHhEInfc
       POSTGRES_DB: mydb
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - railway-postgres-data:/var/lib/postgresql/data
 
+volumes:
+  railway-postgres-data:
+    external: true
