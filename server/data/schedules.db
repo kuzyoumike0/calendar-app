@@ -1,0 +1,4 @@
+const db = await open({
+  filename: './data/schedules.db', // ← SQLite用DBファイルにする
+  driver: sqlite3.Database
+});
